@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANTI X CHEATS | Converter</title>
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/antixcheatsofficial-bit/ANTI-X-CHEATS/refs/heads/main/Untitled.png" type="image/x-icon">
+    <style>
+        /* Disabling right-click and selection is easily bypassed but added as requested */
+        body {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            pointer-events: auto;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            /* Image URL as requested */
+            background: url('https://raw.githubusercontent.com/antixcheatsofficial-bit/ANTI-X-CHEATS/refs/heads/main/ANTI_X_CHEATS.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85); /* Darker overlay for contrast */
+            z-index: -1;
+        }
+        /* Animated red particles (Z-index fixed for visibility) */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0; /* Ensures visibility over the dark overlay */
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: #ff0000;
+            border-radius: 50%;
+            animation: float 10s infinite linear;
+            will-change: transform, opacity;
+        }
+        /* Particle floating animation */
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        /* Simple Theme Container (Reverted to basic styling) */
+        .container {
+            max-width: 1200px;
+            margin: 5vh auto; /* Center vertically slightly higher */
+            padding: 30px;
+            background: rgba(10, 10, 10, 0.95); /* Deep black background */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Simple red glow effect */
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        h1 {
+            text-align: center;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        .login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input {
+            margin: 10px;
+            padding: 12px;
+            border: 2px solid #ff0000;
+            border-radius: 4px;
+            background: #222; /* Dark input background */
+            color: #fff;
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 4px;
+            background: #ff0000;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background: #cc0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+        .converter {
+            display: none;
+            text-align: center;
+        }
+        .mode-selector {
+            margin-bottom: 20px;
+        }
+        .mode-selector button {
+            margin: 5px;
+            background: #333; /* Dark mode selector buttons */
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            font-weight: normal;
+        }
+        .mode-selector button:hover {
+             background: #ff0000;
+             color: #000;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 2px solid #ff0000;
+            border-radius: 4px;
+            background: #111; /* Even darker textarea background */
+            color: #fff;
+            font-family: 'Consolas', 'Courier New', monospace;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the output area wrapper (Code + Copy Button) */
+        .output-wrapper {
+            position: relative;
+            margin-top: 10px;
+            border: 2px solid #ff0000; /* Red border */
+            border-radius: 4px;
+        }
+
+        /* Styling for the output text area */
+        .output {
+            background: #000;
+            padding: 15px;
+            padding-top: 40px; /* Make space for the copy button */
+            border-radius: 4px;
+            overflow-y: auto;
+            max-height: 250px;
+            text-align: left;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        /* Styling for the Copy button placed over the output box */
+        #copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            z-index: 10;
+            background: #ff0000;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="container">
+        <h1>ANTI X CHEATS | Converter</h1>
+        <div id="login-section" class="login">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="authenticate()">Authenticate</button>
+            <p id="login-error" style="color: #ff0000; font-weight: bold;"></p>
+        </div>
+        <div id="converter-section" class="converter">
+            <div class="mode-selector">
+                <button onclick="setMode('auto')">Auto-Detect</button>
+                <button onclick="setMode('csharp-cpp')">C# → C++</button>
+                <button onclick="setMode('csharp-python')">C# → Python</button>
+                <button onclick="setMode('cpp-csharp')">C++ → C#</button>
+                <button onclick="setMode('cpp-python')">C++ → Python</button>
+                <button onclick="setMode('python-csharp')">Python → C#</button>
+                <button onclick="setMode('python-cpp')">Python → C++</button>
+                <p style="color: #ff0000;">Current Mode: <span id="current-mode-display">Auto-Detect</span></p>
+            </div>
+            <textarea id="input-code" placeholder="Paste your code here..."></textarea>
+            <button onclick="convert()">Convert</button>
+            
+            <div class="output-wrapper">
+                <button id="copy-button" onclick="copyCode()">Copy Code</button>
+                <div class="output" id="output">Output code will appear here...</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- Security Block (Easily bypassed, but included as requested) ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', event => {
+            if (event.key === 'I' && event.shiftKey && event.ctrlKey) event.preventDefault(); // Ctrl+Shift+I
+            if (event.key === 'U' && event.ctrlKey) event.preventDefault(); // Ctrl+U
+            if (event.key === 'F12') event.preventDefault(); // F12
+        });
+        
+        // --- Particle Animation ---
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        let currentMode = 'auto';
+
+        function authenticate() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            // NOTE: This check is purely client-side and NOT secure.
+            if (username === 'VOTE' && password === 'ANTIXCHEATS') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('converter-section').style.display = 'block';
+                errorElement.textContent = '';
+            } else {
+                errorElement.textContent = 'Invalid credentials.';
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('current-mode-display').textContent = mode.toUpperCase().replace('-', ' → ');
+        }
+
+        // --- Copy Functionality ---
+        function copyCode() {
+            const outputElement = document.getElementById('output');
+            const button = document.getElementById('copy-button');
+            const codeToCopy = outputElement.innerText;
+
+            // Use the modern Clipboard API
+            if (navigator.clipboard && codeToCopy.trim() !== 'Output code will appear here...') {
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = 'Copy Code';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    button.textContent = 'Failed!';
+                });
+            } else {
+                // Fallback for older browsers
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = codeToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy Code';
+                }, 1500);
+            }
+        }
+
+        // --- NEW Conversion Logic (Improved String Replacement) ---
+        function convert() {
+            const input = document.getElementById('input-code').value;
+            let output = '';
+            const outputElement = document.getElementById('output');
+
+            if (input.trim() === '') {
+                outputElement.innerText = "Please paste code into the input area.";
+                return;
+            }
+
+            // Function to handle common C# type removal for Python conversion
+            function stripCSharpTypes(code) {
+                return code.replace(/(?:int|string|bool|float|double)\s/g, '');
+            }
+
+            // Function to handle common C++/Python type removal/addition
+            function fixVariables(code, source, target) {
+                if (source === 'cpp') {
+                    // C++ to Python: remove type declarations
+                    return code.replace(/(?:int|char|float|double|std::string|string)\s+/g, '');
+                } else if (source === 'python' && target !== 'python') {
+                    // Python to C#/C++: try to add a generic type (int is used here for simplicity)
+                    code = code.replace(/^(\s*)([a-zA-Z_]\w*\s*=\s*.*)/gm, '$1int $2');
+                }
+                return code;
+            }
+
+            
+            let codeToConvert = input;
+
+            // Handle specific modes
+            switch (currentMode) {
+                case 'csharp-cpp':
+                    output = '#include <iostream>\nusing namespace std;\n\n' + codeToConvert;
+                    output = output.replace(/using System;/g, '');
+                    output = output.replace(/public\s+static\s+void\s+Main\s*\((?:string\[\]\s+args)?\)\s*\{/g, 'int main() {');
+                    output = output.replace(/string\s/g, 'std::string ');
+                    output = output.replace(/Console\.WriteLine\((.*?)\);/g, 'cout << $1 << endl;');
+                    output = output.replace(/Console\.Write\((.*?)\);/g, 'cout << $1;');
+                    output = output.replace(/;(?=\s*\})/g, '}'); 
+                    break;
+
+                case 'csharp-python':
+                    output = codeToConvert.replace(/using System;/g, '');
+                    output = output.replace(/public\s+static\s+void\s+Main\s*\((?:string\[\]\s+args)?\)\s*\{/g, '');
+                    output = output.replace(/\{|\}/g, '');
+                    output = stripCSharpTypes(output);
+                    output = output.replace(/Console\.WriteLine\((.*?)\);/g, 'print($1)');
+                    output = output.replace(/Console\.Write\((.*?)\);/g, 'print($1, end="")');
+                    output = output.replace(/;/g, '');
+                    break;
+
+                case 'cpp-csharp':
+                    output = 'using System;\n\n' + codeToConvert;
+                    output = output.replace(/#include\s+<iostream>/g, '');
+                    output = output.replace(/using\s+namespace\s+std;/g, '');
+                    output = output.replace(/int\s+main\s*\(\)\s*\{/g, 'public static void Main() {');
+                    output = output.replace(/return\s+0;/g, '');
+                    output = output.replace(/std::string\s/g, 'string ');
+                    output = output.replace(/cout\s*<<\s*(.*?)\s*<<\s*endl;/g, 'Console.WriteLine($1);');
+                    output = output.replace(/cout\s*<<\s*(.*?)\s*;/g, 'Console.Write($1);');
+                    break;
+
+                case 'cpp-python':
+                    output = codeToConvert.replace(/#include\s+<iostream>|using\s+namespace\s+std;/g, '');
+                    output = output.replace(/int\s+main\s*\(\)\s*\{/g, '');
+                    output = output.replace(/return\s+0;/g, '');
+                    output = output.replace(/\{|\}/g, '');
+                    output = fixVariables(output, 'cpp', 'python');
+                    output = output.replace(/cout\s*<<\s*(.*?)\s*<<\s*endl;/g, 'print($1)');
+                    output = output.replace(/cout\s*<<\s*(.*?)\s*;/g, 'print($1, end="")');
+                    output = output.replace(/;/g, '');
+                    break;
+
+                case 'python-csharp':
+                    output = 'using System;\n\n' + codeToConvert;
+                    output = fixVariables(output, 'python', 'csharp');
+                    output = output.replace(/print\((.*?)\)/g, 'Console.WriteLine($1);');
+                    output = output.replace(/(.*[^;])$/gm, (match) => { 
+                        if (match.match(/^\s*(?:def|if|for|while|else|elif|import)/)) return match;
+                        return match + ';'; 
+                    });
+                    break;
+
+                case 'python-cpp':
+                    output = '#include <iostream>\nusing namespace std;\n\n' + codeToConvert;
+                    output = fixVariables(output, 'python', 'cpp');
+                    output = output.replace(/print\((.*?)\)/g, 'cout << $1 << endl;');
+                    output = output.replace(/(.*[^;])$/gm, (match) => { 
+                        if (match.match(/^\s*(?:def|if|for|while|else|elif|import)/)) return match;
+                        return match + ';'; 
+                    });
+                    break;
+
+                case 'auto':
+                    if (input.includes('using System;') || input.includes('Console.')) {
+                        setMode('csharp-cpp');
+                        return convert(); 
+                    } else if (input.includes('#include') || input.includes('cout')) {
+                        setMode('cpp-python');
+                        return convert();
+                    } else if (input.includes('print(') || input.includes('def ')) {
+                        setMode('python-csharp');
+                        return convert();
+                    } else {
+                        output = 'Unable to detect language. Please select a specific mode.';
+                    }
+                    break;
+
+                default:
+                    output = 'Conversion mode not recognized.';
+            }
+
+            outputElement.innerText = output;
+        }
+    </script>
+</body>
+</html>
